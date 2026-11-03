@@ -412,6 +412,10 @@ When the user provides multiple reference URLs:
 | No captions available | Download video, transcribe with Whisper locally |
 | Scene detection fails | Fall back to uniform frame sampling |
 | All analysis fails | Ask user to describe the reference video verbally, proceed with standard creative intake |
+| `No module named 'yt_dlp'` / `'youtube_transcript_api'` | They are not in `requirements.txt`. Install into the project venv: `uv pip install --python .venv/bin/python yt-dlp youtube-transcript-api` (the venv may have no `pip`) |
+| YouTube "Sign in to confirm you're not a bot" / "page needs to be reloaded" | Download yourself, then pass the **local file** to `video_analyzer`: `.venv/bin/yt-dlp --cookies-from-browser chrome --remote-components ejs:npm -f "mp4/best" -o projects/_ref/dl/ref.%(ext)s <url>`. The `--remote-components` flag lets yt-dlp solve YouTube's JS challenge with `deno`/`node`. |
+| No transcript and `transcriber` unavailable | Pull auto captions with the same cookies: `--skip-download --write-auto-subs --sub-langs "en.*" --sub-format vtt`, then strip the VTT tags |
+| Scene detect returns **1 scene** for a 50 s+ video | Typical of continuous whiteboard / doodle animation with no hard cuts, so this is not a failure of the reference. Sample frames uniformly and **Read** a contact sheet: `ffmpeg -i ref.mp4 -vf "fps=0.4,scale=240:-1,tile=6x4" -frames:v 1 sheet.jpg` |
 
 Never silently skip analysis steps. If something fails, tell the user what happened
 and what the impact is on the analysis quality.

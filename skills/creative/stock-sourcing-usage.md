@@ -94,6 +94,14 @@ Unlike AI generation, searching "ocean waves" twice returns the same results. If
 ### 6. Duration Filtering for Video
 Both stock video tools support `min_duration` and `max_duration` parameters. Use these to avoid downloading 30-second clips when you only need 4 seconds — it saves bandwidth and time.
 
+### 7. `pixabay_music` Can Return HTTP 403
+`pixabay_music` scrapes the Pixabay website, and Pixabay may block it (`HTTP Error 403: Forbidden`, seen Oct 2026). A real browser is not blocked. With ego-browser:
+1. Open `https://pixabay.com/music/search/<query>/?duration=30-120`.
+2. Collect track links via `page.evaluate` (`a[href^="/music/"]` ending in `-<id>/`).
+3. On the chosen track page, arm `page.waitForEvent("download")`, click **Free download**, then call `download.saveAs(projects/<id>/assets/music/bgm.mp3)`.
+
+Record the track title, artist, and id in the `decision_log`. The Pixabay Content License allows commercial use without attribution.
+
 ## Integration with Asset Pipeline
 
 Stock tools integrate exactly like generation tools. In the asset manifest:

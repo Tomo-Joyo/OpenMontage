@@ -55,6 +55,49 @@ For a character that walks / dances / etc., do NOT hand-author motion (sine curv
 - One paused `gsap.timeline` on `window.__timelines`. Validate with `lint` + `snapshot` (read the contact-sheet) before render.
 - **Pipeline-exempt**: this is a style + engine on the `animation` / `character-animation` pipelines — NOT a Rule-Zero pipeline. Don't stall looking for an `.yaml` manifest.
 
+## Recipe: vertical "whiteboard explainer" Short (9:16)
+
+Matches the popular stick-figure Shorts look: cream paper, a static brush-stroke banner top
+and bottom, and one deadpan figure center-bottom with ideas popping above it. Built and
+shipped in `projects/trik-penjumlahan-cepat/composition/index.html`. Copy its helpers.
+
+- **Canvas:** `data-width="1080" data-height="1920"`, paper `#f4ecd3`.
+- **Banners:** `inkRibbon` (`width:150, taper:0.12`) filled `#111` at y≈210 and y≈1712.
+  Put the red (`#e3211b`) Montserrat 900 italic text on top as HTML. Montserrat is pre-bundled,
+  so it needs no `@font-face`.
+- **Layout bands:**
+  - title y≈340 (120px),
+  - subtitle y≈480,
+  - equation rows y≈600 and y≈790 (110–120px),
+  - figure ground y≈1570.
+  Scale the puppet with a mount transform:
+  `<g id="mount" transform="translate(540 1570) scale(0.82) translate(-540 -1570)">`.
+  At full size its head collides with the second content row.
+- **Helpers worth reusing:**
+  - `hand(text,x,y,size,cls)`: handwritten HTML div.
+  - `pop(el,t)`: overshoot scale-in.
+  - `row(tokens,y,size,t0,gap)`: an equation that writes itself token by token.
+  - `drawOn(path,t)`: stroke draw-on.
+  - `ring()`: wobbly circle.
+  - `move(clip,t,dur,once)` = `choreograph` + `stand(t+dur)`.
+- **Return to rest after every clip.** `choreograph` leaves the figure frozen on the clip's
+  last frame (often mid-kick). Append a 0.05 s proxy tween that calls `pup.setPose(IP.STAND)`.
+- **Vary the clips per beat**, e.g. shuffle (tedious) → jump (aha) → twist (excited) → wave →
+  march (thinking) → dance_spin (swap) → dance_glide → wave goodbye. All bundled clips
+  have zero horizontal root motion, so the figure stays centered.
+- **Sync beats to narration** with `silencedetect` pause times.
+- **Raster illustrations** blend in with `mix-blend-mode: multiply`
+  + `filter: brightness(1.08) contrast(1.15)`. Keep them line-art with one accent color.
+
+### Gotchas found while building it
+
+| Gotcha | Result | Fix |
+|---|---|---|
+| `stroke-linecap: round` path hidden only by `strokeDashoffset` | a colored **dot** shows before the draw-on starts | start the `fromTo` at `opacity: 0` and tween to 1 together with the dashoffset |
+| Clearing a scene | stale elements linger | `tl.to(stage.querySelectorAll(".hand"), {opacity:0}, t)` at build time only targets elements created so far, which is exactly the current scene |
+| Lint warning `nested_structure_needs_subcomposition` | harmless for a single-scene piece | ignore, or split scenes into sub-compositions for Studio editing |
+
 ## Reference builds
 
+- `projects/trik-penjumlahan-cepat/` — 56 s vertical Short (Indonesian, basic addition): banners, equations, mocap figure, narration + illustrations. Note: `projects/` is gitignored, so this exists only on the machine that produced it.
 - `projects/ink-theater-reel/` — capabilities reel. · `projects/ink-theater-momentum/` — "Momentum" story (handwriting via HTML divs).

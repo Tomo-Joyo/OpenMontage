@@ -126,6 +126,7 @@ Key capability families to look for in the output:
 | Lip Sync | `creative/lip-sync-usage.md` | Wav2Lip model selection, dubbing workflows, input requirements | `faceswap` |
 | Talking Head Gen | `creative/talking-head-gen-usage.md` | SadTalker/MuseTalk, photo-to-video, expression tuning | `avatar-video` |
 | Video Understanding | `creative/video-understand-usage.md` | Visual QA, quality gating, scene classification | `video-understand` |
+| Ink Theater | `creative/ink-theater.md` | Hand-drawn ink doodle engine + mocap stick figure; vertical whiteboard-explainer Short recipe | `hyperframes-core`, `gsap-core` |
 
 ## Pipeline Type Skills
 
